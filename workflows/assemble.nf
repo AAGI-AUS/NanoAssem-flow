@@ -1,24 +1,20 @@
-// QC filtering trimming module
+// Assembling module
 // Author: Shota Morikawa shota.morikawa@postgrad.curtin.edu.au
 //
-// Test module example here
-//
-// 
-//
 
-include { FLYE_ASSEMBLE } from '../subworkflows/local/flye/main.nf'
-if (params.inputdir) { fastq = channel.fromFilePairs(params.inputdir, flat: true, checkIfExists: true) } else { exit 1, "Input files empty" }
+include { ASSEMBLY } from '../subworkflows/assemble'
+//if (params.inputdir) { fastq = channel.fromFilePairs(params.inputdir, flat: true, checkIfExists: true) } else { exit 1, "Input files empty" }
 
 
-workflow ASSEMBLE_WORKFLOW {
+workflow ASSEMBLE_READS {
     
-    //ch_input.view() //shows content of directory
-
+    reads_ch = channel
+        .fromFilePairs(params.inputdir, size: 2, flat: true)
+        .map { prefix, fastq, fasta -> 
+            def meta = [id: prefix]
+            [meta, fastq, fasta]
+        }
     
-    fastq.view() 
-    
-
-    FLYE_ASSEMBLE(fastq)
-
-    
+    ASSEMBLY(reads_ch)
+   
 }
