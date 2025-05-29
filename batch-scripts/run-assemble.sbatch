@@ -22,6 +22,6 @@ export PAWSEY_PROJECT='pawsey1142'
 
 nextflow run ./main.nf -profile pawsey_setonix,singularity -resume \
 	--tool assemble \
-	--inputdir '/scratch/y95/kgagalova/data-backup/all_data_cleanedup/*{simplex.fastq,simplex.corrected.fasta}.gz' \
+	--inputdir '/scratch/y95/kgagalova/data-backup/all_data_cleanedup/*{duplex.fastq,simplex.corrected.fasta}.gz' \
 	--outputdir results \
         --genome_size '1.2g'
