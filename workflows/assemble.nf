@@ -15,6 +15,7 @@ workflow ASSEMBLE_READS {
             [meta, fastq, fasta]
         }
     
-    ASSEMBLY(reads_ch)
+    ASSEMBLY(reads_ch,
+		params.genome_size)
    
 }

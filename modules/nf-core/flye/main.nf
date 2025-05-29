@@ -1,6 +1,6 @@
 process FLYE {
     tag "$meta.id"
-    label 'biggish_task'
+    label 'large_assemblyTask'
 
     conda "${moduleDir}/environment.yml"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
@@ -10,6 +10,7 @@ process FLYE {
     input:
     tuple val(meta), path(reads)
     val mode
+    val genome_size
 
     output:
     tuple val(meta), path("*.fasta.gz"), emit: fasta
@@ -25,6 +26,7 @@ process FLYE {
 
     script:
     def args = task.ext.args ?: ''
+    def genome_size_arg = genome_size ? "--genome-size ${genome_size}" : ''
     def prefix = task.ext.prefix ?: "${meta.id}"
     def valid_mode = ["--pacbio-raw", "--pacbio-corr", "--pacbio-hifi", "--nano-raw", "--nano-corr", "--nano-hq"]
     if ( !valid_mode.contains(mode) )  { error "Unrecognised mode to run Flye. Options: ${valid_mode.join(', ')}" }
@@ -33,8 +35,8 @@ process FLYE {
         $mode \\
         $reads \\
         --out-dir . \\
-        --threads \\
-        $task.cpus \\
+        --threads $task.cpus \\
+        $genome_size_arg \\
         $args
 
     gzip -c assembly.fasta > ${prefix}.assembly.fasta.gz
